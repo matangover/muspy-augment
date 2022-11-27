@@ -10,19 +10,27 @@ Fast data augmentations for symbolic music.
 * We use our own fork of muspy which added several features and bugfixes.
 * The augmentations adjust the given scores' `beats` and each track's `notes`
 
-### Usage Examples
+## Installation
+
+```
+pip install git+https://github.com/matangover/muspy-augment
+```
+
+## Usage Examples
 
 Using the object API:
 ```python
+import muspy_augment as ma
+
 # Configure augmentations
 # (if you want you can serialize this configuration,
 # e.g. as part of your TrainingArguments)
 augmentations = [
     # With a probability of 0.2, apply either CutMeasures
     # or RemoveMeasures (with probability of 0.5 each)
-    EitherOr(0.2, CutMeasures(1), RemoveMeasures(1), 0.5),
+    ma.EitherOr(0.2, ma.CutMeasures(1), ma.RemoveMeasures(1), 0.5),
     # Apply AddEmptyMeasures with probability of 0.25
-    AddEmptyMeasures(0.25)
+    ma.AddEmptyMeasures(0.25)
 ]
 # At some point later, apply the augmentations
 for augmentation in augmentations:
@@ -31,20 +39,24 @@ for augmentation in augmentations:
 
 Using the functional API:
 ```python
+import torch
+import muspy_augment as ma
+from muspy import Music
+
 def augment_phrase_pair(score1: Music, score2: Music):
     assert score1.resolution == score2.resolution
     applied_augmentations = []
     if torch.rand(1) < 0.4:
         if torch.rand(1) < 0.5:
-            score1, score2, aug = cut_phrase(score1, score2)
+            score1, score2, aug = ma.cut_phrase(score1, score2)
             applied_augmentations.append(aug)
         else:
-            non_tied_measures = get_common_non_tied_measures([score1, score2])
-            score1, score2, aug = remove_some_measures(score1, score2, non_tied_measures)
+            non_tied_measures = ma.get_common_non_tied_measures([score1, score2])
+            score1, score2, aug = ma.remove_some_measures(score1, score2, non_tied_measures)
             applied_augmentations.append(aug)
 
     if torch.rand(1) < 0.25:
-        score1, score2, aug = add_empty_bars(score1, score2)
+        score1, score2, aug = ma.add_empty_bars(score1, score2)
         applied_augmentations.append(aug)
 
     return score1, score2, applied_augmentations
