@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "muspy-augment"
+version = "0.1.0"
+description = ""
+authors = ["Matan Gover <matangover@gmail.com>"]
+readme = "README.md"
+packages = [{include = "muspy_augment"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+torch = "<1.13"
+muspy = {git = "https://github.com/matangover/muspy", rev = "matan"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
